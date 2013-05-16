@@ -1292,6 +1292,35 @@ def get_longest_accession(taxid, names_list, genome):
 
 	return accession	
 
+def get_lineage(TaxID):
+    '''
+    This function takes as input a genbank taxonID and returns a taxomony dictionary
+    '''
+    import urllib2
+    import re
+
+    taxonomy = {'phylum': '', 'subphylum': '', 'superclass': '', 'class': '', 'superorder': '', 'order': '', 'suborder': '', 'family': '', 'subfamily': '', 'genus': ''}
+
+    url = 'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=%s&lvl=3&keep=0&srchmode=1&unlock&lin=f' %(TaxID)
+    entrez_tax = urllib2.urlopen(url).read() #this is the dirty looking xml file from entrez
+	
+    #now extract all the lineage data from entrez_tax
+    for level in taxonomy:
+        m = re.search('"%s">(\S+)</a>' %(level), entrez_tax)
+
+        try:
+            taxonomy[level] = m.group(1)
+        except:
+            taxonomy[level] = "NA"
+
+    binomial = re.search(r">Taxonomy browser ((.+))<", entrez_tax)
+    binomial = binomial.group(1)[1:-1]
+    species = binomial.split()[1]	
+    taxonomy['species'] = species
+	
+    return taxonomy
+
+
 def get_taxonomy(accession):
 	'''
 	This function takes as input a genbank accession (for the nucleotide database only)
