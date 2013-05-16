@@ -1061,7 +1061,7 @@ def get_all_GIs(taxid):
 	GIs = re.findall("<Id>(\S+)</Id>", data)
 	return GIs
 
-def search_all_GIs(taxid, searchterm):
+def search_all_GIs(taxid, searchterm, retmax):
 	"""
 	Get all GIs for a taxon ID, that match that ID, and the search term
 	:param taxid: a genbank taxnomy ID as a string
@@ -1069,7 +1069,7 @@ def search_all_GIs(taxid, searchterm):
 	N.B. Don't use spaces in the search term, use commas instead.	
 	"""
 	import urllib, re
-	url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?&retmax=200&term=txid%s[Organism:subtree]%s&' %(taxid, searchterm)
+	url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?&retmax=%d&term=txid%s[Organism:subtree]%s&' %(retmax, taxid, searchterm)
 	params = {
 		'db': 'nucleotide',
 		'rettype': 'xml',
