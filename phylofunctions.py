@@ -1299,7 +1299,11 @@ def get_lineage(TaxID):
     import urllib2
     import re
 
-    taxonomy = {'phylum': '', 'subphylum': '', 'superclass': '', 'class': '', 'superorder': '', 'order': '', 'suborder': '', 'family': '', 'subfamily': '', 'genus': ''}
+    taxonomy = {'taxid': TaxID, 'phylum': 'NA', 'subphylum': 'NA', 'superclass': 'NA', 'class': 'NA', 'superorder': 'NA', 'order': 'NA', 'suborder': 'NA', 'family': 'NA', 'subfamily': 'NA', 'genus': 'NA'}
+
+    if TaxID == "NA":
+        taxonomy['species'] = 'NA'
+        return taxonomy
 
     url = 'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=%s&lvl=3&keep=0&srchmode=1&unlock&lin=f' %(TaxID)
     entrez_tax = urllib2.urlopen(url).read() #this is the dirty looking xml file from entrez
@@ -1312,11 +1316,14 @@ def get_lineage(TaxID):
             taxonomy[level] = m.group(1)
         except:
             taxonomy[level] = "NA"
-
-    binomial = re.search(r">Taxonomy browser ((.+))<", entrez_tax)
-    binomial = binomial.group(1)[1:-1]
-    species = binomial.split()[1]	
-    taxonomy['species'] = species
+    try:
+        binomial = re.search(r">Taxonomy browser ((.+))<", entrez_tax)
+        binomial = binomial.group(1)[1:-1]
+        species = binomial.split()[1]	
+        taxonomy['species'] = species
+    except:
+        taxonomy['species'] = "NA"
+	    
 	
     return taxonomy
 
